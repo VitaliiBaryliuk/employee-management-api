@@ -13,8 +13,4 @@ app.use(helmet());
 // app.use(helmet.noCache());
 app.use(routes)
 
-// app.get('/', function (req, res) {
-//   res.send('Hello World')
-// })
- 
 app.listen(5000)
