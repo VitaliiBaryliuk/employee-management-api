@@ -1,5 +1,7 @@
 const router = require('express').Router()
 const Employee = require('../models/Employee')
+const upload = require('../middlewares/uploadMiddleware')
+const Resize = require('../utils/resize')
 
 router.get('/', async function(req, res) {
   try {
@@ -9,16 +11,6 @@ router.get('/', async function(req, res) {
   }catch(error) {
     return res.status(400)
   }
-})
-
-router.get('/:department_id', async function(req, res) {
-  // try {
-  //   const departments = await Employee.findAll()
-
-  //   return res.status(200).json(departments)
-  // }catch(error) {
-  //   return res.status(500)
-  // }
 })
 
 router.post('/', async function(req, res) {
@@ -40,12 +32,31 @@ router.post('/', async function(req, res) {
     if (data.date_of_joining)
       employeeData['date_of_joining'] = data.date_of_joining
 
-    if (data.photo_file)
-      employeeData['photo_file'] = data.photo_file
+    if (data.photoFileName)
+      employeeData['photo_file'] = data.photoFileName;
 
     const result = await Employee.create(employeeData)
     
     return res.status(200).json({ success: true, result })
+  }catch(error) {
+    return res.status(500).json({ success: false, message: error })
+  }
+})
+
+router.post('/upload-image', upload.single('uploadedFile'), async function(req, res) {
+  try {
+    // const data = req.body
+    // const imagePath = path.join(__dirname, '../public/images')
+    // const fileUpload = new Resize(imagePath)
+    // const photoFileName = await fileUpload.save(data.photo_file)
+
+    const filename = req.file.filename;
+
+    if (!filename) {
+      return res.status(400).json({ success: false, message: "Image is not uploaded." })
+    }
+
+    return res.status(200).json({ success: true, image: filename })
   }catch(error) {
     return res.status(500).json({ success: false, message: error })
   }
@@ -72,8 +83,6 @@ router.put('/', async function(req, res) {
     if (data.photo_file)
       employeeData['photo_file'] = data.photo_file
 
-    console.log('employeeData', employeeData)
-    
     const result = await Employee.update(employeeData, { where: { employee_id: data.employee_id } })
 
     return res.status(200).json({ success: true, result })

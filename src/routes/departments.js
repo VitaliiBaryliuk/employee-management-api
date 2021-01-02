@@ -11,16 +11,6 @@ router.get('/', async function(req, res) {
   }
 })
 
-router.get('/:departmentId', async function(req, res) {
-  // try {
-  //   const departments = await Department.findAll()
-
-  //   return res.status(200).json(departments)
-  // }catch(error) {
-  //   return res.status(500)
-  // }
-})
-
 router.post('/', async function(req, res) {
   try {
     const data = req.body
@@ -55,8 +45,8 @@ router.put('/', async function(req, res) {
 
 router.delete('/', async function(req, res) {
   try {
-    const data = req.body;
-    
+    const data = req.query;
+
     if (!data.department_id) {
       return res.status(400).json({ success: false, message: "department_id is required param" })
     }
